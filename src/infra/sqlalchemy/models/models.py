@@ -36,21 +36,15 @@ class Pedido(Base):
     __tablename__ = 'Pedido'
     
     id = Column(Integer, primary_key=True, index=True)
-    
     quantidade = Column(Integer)
-    
     local_entrega = Column(String)
-    
     tipo_entrega = Column(String)
-    
     observacao = Column(String)
-    
-    #Relacionamento Pedido -> Produto
-    produto_id = Column(Integer, ForeignKey('Produto.id', name="fk_Produto"))
 
-    produtos = relationship('Produto')
-    
-    #Relacionamento Pedido -> Usuario
-    usuario_id = Column(Integer, ForeignKey('Usuario.id', name='fk_Usuario'))
-    
+    usuario_id = Column(Integer, ForeignKey(
+        'Usuario.id', name='fk_Usuario'))
+    produto_id = Column(Integer, ForeignKey(
+        'Produto.id', name='fk_Produto'))
+
     usuario = relationship('Usuario', back_populates='pedidos')
+    produto = relationship('Produto')

@@ -3,8 +3,8 @@ from typing import List, Optional
 
 
 class ProdutoSimples(BaseModel):
+    id: Optional[int] = None
     nome: str
-    detalhes: str
     preco: float
     disponivel: bool = False
     
@@ -47,13 +47,12 @@ class Pedido(BaseModel):
     local_entrega: Optional[str]
     tipo_entrega: str
     observacao: Optional[str] = 'Sem observações'
-    
+
     usuario_id: Optional[int]
     produto_id: Optional[int]
-    
+
     usuario: Optional[UsuarioSimples]
     produto: Optional[ProdutoSimples]
 
     class Config:
-        orm_mode=True
-
+        orm_mode = True

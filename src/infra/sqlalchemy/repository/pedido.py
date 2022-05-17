@@ -10,7 +10,8 @@ class RepositoryPedido():
 
     def criar(self, pedido: schemas.Pedido):
         db_pedido = Pedido(quantidade = pedido.quantidade,
-        local_entrega = pedido.local_entrega, tipo_entrega = pedido.tipo_entrega,
+        local_entrega = pedido.local_entrega,
+        tipo_entrega = pedido.tipo_entrega,
         observacao = pedido.observacao,
         usuario_id = pedido.usuario_id,
         produto_id = pedido.produto_id)
