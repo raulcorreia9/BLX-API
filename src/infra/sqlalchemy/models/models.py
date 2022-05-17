@@ -29,9 +29,8 @@ class Produto(Base):
     
     usuario_id = Column(Integer, ForeignKey('Usuario.id', name='fk_Usuario'))
     
+    #Relacionamento Produto -> Usuario
     usuario = relationship('Usuario', back_populates='produtos')
-    
-    pedidos = relationship('Pedido')
     
 class Pedido(Base):
     __tablename__ = 'Pedido'
@@ -48,7 +47,7 @@ class Pedido(Base):
     
     #Relacionamento Pedido -> Produto
     produto_id = Column(Integer, ForeignKey('Produto.id', name="fk_Produto"))
-    
+
     produtos = relationship('Produto')
     
     #Relacionamento Pedido -> Usuario
