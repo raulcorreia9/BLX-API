@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi import Depends, status
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from src.schemas.schemas import Produto, ProdutoSimples
 from src.infra.sqlalchemy.config.database import get_db
@@ -17,6 +17,14 @@ def listar_produtos(session_db: Session = Depends(get_db)):
 @router.post('/produtos')
 def criar_produto(produto: Produto, session_db: Session = Depends(get_db)):
     produto = RepositoryProduto(session_db).criar(produto)
+    return produto
+
+@router.get('/produtos/{produto_id}')
+def exibir_produto(produto_id: int, session_db: Session = Depends(get_db)):
+    produto = RepositoryProduto(session_db).buscarPorId(produto_id)
+    if not produto:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existe um produto com ID = {produto_id}')
+    
     return produto
 
 @router.put('/produtos/{produto_id}')
