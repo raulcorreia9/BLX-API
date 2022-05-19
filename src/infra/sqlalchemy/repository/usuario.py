@@ -23,8 +23,11 @@ class RepositoryUsuario():
         
         return usuarios
     
-    def obter(self):
-        pass
+    def find_by_id(self, id: int):
+        consulta = select(Usuario).where(Usuario.id == id)
+        usuario = self.db_session.execute(consulta).scalars().first()
+        
+        return usuario
     
     def remover(self):
         pass

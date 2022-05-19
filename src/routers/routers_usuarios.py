@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
-from src.schemas.schemas import Usuario
+from src.schemas.schemas import Usuario, UsuarioSimples
 from src.infra.sqlalchemy.repository.usuario import RepositoryUsuario
 from src.infra.sqlalchemy.config.database import get_db
 from typing import List
@@ -18,3 +18,11 @@ def listar_usuarios(session_db: Session = Depends(get_db)):
 def criar_usuario(usuario: Usuario, session_db: Session = Depends(get_db)):
     usuario_criado = RepositoryUsuario(session_db).criar(usuario)
     return usuario_criado
+
+@router.get('/usuarios/{usuario_id}', response_model=UsuarioSimples)
+def exibir_usuario(usuario_id: int, session_db: Session = Depends(get_db)):
+    usuario = RepositoryUsuario(session_db).find_by_id(usuario_id)
+    
+    if not(usuario):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario_id}')
+    return usuario
