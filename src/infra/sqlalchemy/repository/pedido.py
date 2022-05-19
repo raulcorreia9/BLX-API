@@ -28,19 +28,19 @@ class RepositoryPedido():
     
     def buscar_pedido_by_id(self, id: int):
         consulta = select(Pedido).where(Pedido.id == id)
-        pedido = self.db.execute(consulta).first()
+        pedido = self.db.execute(consulta).scalars().first()
         
-        return pedido[0]
+        return pedido
     
     def buscar_pedidos_by_usuario_id(self, id: int):
         consulta = select(Pedido).where(Pedido.usuario_id == id)
-        pedidos = self.db.execute(consulta).all()
+        pedidos = self.db.execute(consulta).scalars().all()
         
         return pedidos
     
     #Rota que filtra as vendas dos produtos pertencentes a um usuario especifico
     def buscar_vendas_by_usuario_id(self, id: int):
         consulta = select(Pedido).join_from(Pedido, Produto).where(Produto.usuario_id == id)
-        vendas = self.db.execute(consulta).all()
+        vendas = self.db.execute(consulta).scalars().all()
         
         return vendas

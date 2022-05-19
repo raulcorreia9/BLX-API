@@ -25,18 +25,19 @@ def exibir_pedido(pedido_id: int, session_db: Session = Depends(get_db)):
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existe um pedido com ID = {pedido_id}')
 
-@router.get('/pedidos/{usuario_id}/pedidos')
+@router.get('/pedidos/{usuario_id}/compras')
 def exibir_pedido(usuario_id: int, session_db: Session = Depends(get_db)):
-    try:
-        pedido = RepositoryPedido(session_db).buscar_pedidos_by_usuario_id(usuario_id)
-        return pedido
-    except:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem pedidos para o Usuario de ID = {usuario_id}')
+    
+    pedido = RepositoryPedido(session_db).buscar_pedidos_by_usuario_id(usuario_id)
+    if not pedido:   
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario_id}')
+    
+    return pedido
     
 @router.get('/pedidos/{usuario_id}/vendas')
 def exibir_pedido(usuario_id: int, session_db: Session = Depends(get_db)):
-    try:
-        pedido = RepositoryPedido(session_db).buscar_vendas_by_usuario_id(usuario_id)
-        return pedido
-    except:
+    pedido = RepositoryPedido(session_db).buscar_vendas_by_usuario_id(usuario_id)
+    
+    if not pedido:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem vendas para o Usuario de ID = {usuario_id}')
+    return pedido
