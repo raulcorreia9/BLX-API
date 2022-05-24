@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from fastapi import FastAPI, Depends, status
+from fastapi import Depends, status
 from sqlalchemy.orm import Session
-from src.schemas.schemas import Usuario, UsuarioSimples
+from src.schemas.schemas import Usuario, UsuarioSimples, LoginData
 from src.infra.sqlalchemy.repository.usuario import RepositoryUsuario
 from src.infra.sqlalchemy.config.database import get_db
 from src.infra.providers import hash_provider
+from src.infra.providers import token_provider
+from src.routers.auth_utils import obter_usuario_logado
 from typing import List
 
 router = APIRouter()
@@ -36,4 +38,28 @@ def exibir_usuario(usuario_id: int, session_db: Session = Depends(get_db)):
     
     if not(usuario):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario_id}')
+    return usuario
+
+@router.post('/token')
+def login(login_data: LoginData, session_db: Session = Depends(get_db)):
+    senha = login_data.senha
+    telefone = login_data.telefone
+    
+    usuario = RepositoryUsuario(session_db).find_by_telefone(telefone)
+    
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Telefone invalido')
+
+    senha_valida = hash_provider.verificar_hash(senha, usuario.senha)
+    
+    if not senha_valida:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Senha invalida')
+
+    #Gera JWT
+    token = token_provider.criar_acess_token({'sub': usuario.telefone})
+    
+    return {'usuario': usuario, 'access-token': token}
+
+@router.get('/me', response_model=UsuarioSimples)
+def me(usuario: Usuario = Depends(obter_usuario_logado)):
     return usuario

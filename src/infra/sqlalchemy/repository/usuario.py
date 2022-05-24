@@ -29,9 +29,9 @@ class RepositoryUsuario():
         
         return usuario
     
-    def find_by_telefone(self, telefone: str):
+    def find_by_telefone(self, telefone: str) -> Usuario:
         consulta = select(Usuario).where(Usuario.telefone == telefone)
-        usuario = self.db_session.execute(consulta).first()
+        usuario = self.db_session.execute(consulta).scalars().first()
         
         return usuario
     
