@@ -22,7 +22,6 @@ class Usuario(BaseModel):
         orm_mode=True
         
 class UsuarioSimples(BaseModel):
-    id: Optional[int] = None
     nome: str
     telefone: str
     
@@ -35,6 +34,11 @@ class LoginData(BaseModel):
     
     class Config:
         orm_mode=True
+        
+class LoginSucesso(BaseModel):
+    usuario: UsuarioSimples
+    access_token: str
+
         
 class Produto(BaseModel):
     id: Optional[int] = None

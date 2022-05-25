@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends, status
 from sqlalchemy.orm import Session
-from src.schemas.schemas import Usuario, UsuarioSimples, LoginData
+from src.schemas.schemas import Usuario, UsuarioSimples, LoginData, LoginSucesso
 from src.infra.sqlalchemy.repository.usuario import RepositoryUsuario
 from src.infra.sqlalchemy.config.database import get_db
 from src.infra.providers import hash_provider
@@ -40,7 +40,7 @@ def exibir_usuario(usuario_id: int, session_db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario_id}')
     return usuario
 
-@router.post('/token')
+@router.post('/auth/token')
 def login(login_data: LoginData, session_db: Session = Depends(get_db)):
     senha = login_data.senha
     telefone = login_data.telefone
@@ -58,8 +58,8 @@ def login(login_data: LoginData, session_db: Session = Depends(get_db)):
     #Gera JWT
     token = token_provider.criar_acess_token({'sub': usuario.telefone})
     
-    return {'usuario': usuario, 'access-token': token}
+    return LoginSucesso(usuario=usuario, access_token=token)
 
-@router.get('/me', response_model=UsuarioSimples)
+@router.get('/auth/me', response_model=UsuarioSimples)
 def me(usuario: Usuario = Depends(obter_usuario_logado)):
     return usuario

@@ -1,8 +1,10 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from typing import List
 from sqlalchemy.orm import Session
+from src.infra.sqlalchemy.models.models import Usuario
+from src.routers.auth_utils import obter_usuario_logado
 from src.infra.sqlalchemy.config.database import get_db
-from src.schemas.schemas import Pedido
+from src.schemas.schemas import Pedido, Usuario
 from src.infra.sqlalchemy.repository.pedido import RepositoryPedido
 
 router = APIRouter()
@@ -12,7 +14,7 @@ def fazer_pedido(pedido: Pedido, session_db: Session = Depends(get_db)):
     pedido = RepositoryPedido(session_db).criar(pedido)
     return pedido
 
-@router.get('/pedidos', response_model=List[Pedido])
+@router.get('/pedidos/users', response_model=List[Pedido])
 def listar_pedidos(session_db: Session = Depends(get_db)):
     pedidos = RepositoryPedido(session_db).listar()
     return pedidos
@@ -25,13 +27,13 @@ def exibir_pedido(pedido_id: int, session_db: Session = Depends(get_db)):
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existe um pedido com ID = {pedido_id}')
 
-@router.get('/pedidos/{usuario_id}/compras')
-def exibir_pedido(usuario_id: int, session_db: Session = Depends(get_db)):
-    
-    pedido = RepositoryPedido(session_db).buscar_pedidos_by_usuario_id(usuario_id)
+@router.get('/pedidos', response_model=List[Pedido])
+def exibir_pedido(usuario: Usuario = Depends(obter_usuario_logado), session_db: Session = Depends(get_db)):
+    pedido = RepositoryPedido(session_db).buscar_pedidos_by_usuario_id(usuario.id)
+
     if not pedido:   
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario_id}')
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Não existem compras para o Usuario de ID = {usuario.id}')
+
     return pedido
     
 @router.get('/pedidos/{usuario_id}/vendas')
